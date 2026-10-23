@@ -2,7 +2,7 @@ B FOR BAKING WEBSITE
 
 OPEN AND PUBLISH
 Open index.html in a browser, keeping all accompanying files in place.
-To publish, upload index.html, styles.css, app.js, gallery-data.js, builder.js, photo-sources.json and the assets folder to a static website host. No build step is required.
+To publish, upload index.html, styles.css, app.js, gallery-data.js, builder.js, baker-bot.js, photo-sources.json and the assets folder to a static website host. No build step is required.
 
 PHOTO COLLECTIONS
 20 wedding photos, 20 birthday photos, 20 baby-celebration photos, plus 4 anniversary/gifting references.
@@ -27,3 +27,7 @@ This workspace's Sites service returned 'Sites is not yet enabled for this works
 
 EDITING
 Content: index.html. Photo metadata: gallery-data.js. Enquiry/gallery logic: app.js. Custom illustration: builder.js. Design: styles.css. Font requests use Google Fonts, with local system fallbacks when unavailable.
+
+BAKER BOT
+A built-in browser guide offers occasion/style browsing, a four-step page tour, cake-weight estimates, customiser navigation and enquiry guidance. It uses predefined website information and intent matching, with no live AI service or API calls. It stores no chat history on a server. Pricing, availability, ingredients and payment questions are referred to the bakery.
+Validation: opening/closing, keyboard focus and Escape, intent routing, occasion/style filtering, kg calculation, invalid guest input, enquiry transfer, safe text rendering, links, restart, tour and desktop/mobile bounds.

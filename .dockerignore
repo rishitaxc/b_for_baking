@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+data
+node_modules
+tests
+preview-*.png
+*.sqlite*
+*.db*
+*.log

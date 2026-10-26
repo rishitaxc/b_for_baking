@@ -3,3 +3,12 @@ preview-*.png
 Thumbs.db
 .env
 .env.*
+
+!.env.example
+data/
+node_modules/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log

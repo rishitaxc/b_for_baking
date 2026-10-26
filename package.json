@@ -1,0 +1,8 @@
+{
+  "name": "b-for-baking",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bakery website, enquiry backend and owner dashboard",
+  "engines": { "node": ">=24" },
+  "scripts": { "start": "node --env-file-if-exists=.env server.js", "test": "node --test tests/backend.test.js" }
+}

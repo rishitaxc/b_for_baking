@@ -46,7 +46,7 @@
       const note = document.createElement('p'); note.textContent = 'Your details are saved with the bakery. The bakery will confirm availability, design, price and arrangements before your order is confirmed. Please keep this reference.';
       const link = document.createElement('a'); link.className = 'text-link'; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Follow up with the bakery on WhatsApp ↗';
       link.href = 'https://wa.me/917005246168?text=' + encodeURIComponent(`Hi B for Baking! I submitted enquiry ${result.reference}. My name is ${payload.name}. My celebration date is ${payload.date}. I’d like to follow up on the design and availability. Thank you!`);
-      status.className = 'form-status enquiry-received'; status.append(heading, note, link); status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      status.className = 'form-status enquiry-received'; status.append(heading, note, link); const track = document.createElement('a'); track.href = '#track-order'; track.className = 'text-link'; track.textContent = 'Check if my order is accepted →'; track.addEventListener('click', () => { document.querySelector('#track-reference').value = result.reference; document.querySelector('#track-phone').value = payload.phone; }); status.append(document.createElement('br'), track); status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (error) { status.className = 'form-status form-error'; status.textContent = error.message || 'We could not save your enquiry. Your details are still in the form. Please try again.'; }
     finally { button.disabled = false; button.textContent = 'Send enquiry to the bakery ↗'; }
   });

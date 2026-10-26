@@ -10,7 +10,7 @@ const scrypt = promisify(crypto.scrypt);
 const ROOT = __dirname;
 const STATUSES = ['New enquiry', 'Awaiting quote', 'Awaiting advance', 'Confirmed', 'Baking', 'Ready', 'Completed', 'Cancelled'];
 const TYPES = ['Custom celebration cake', 'Birthday cake', 'Wedding cake', 'Anniversary cake', 'Baby shower cake', 'Graduation cake', 'Hamper or gift', 'Something else'];
-const STATIC = new Set(['index.html', 'styles.css', 'app.js', 'builder.js', 'gallery-data.js', 'baker-bot.js', 'customer-api.js', 'admin.html', 'admin.css', 'admin.js', 'privacy.html']);
+const STATIC = new Set(['index.html', 'styles.css', 'app.js', 'builder.js', 'gallery-data.js', 'baker-bot.js', 'customer-api.js', 'admin.html', 'admin.css', 'admin.js', 'privacy.html', 'customer-tools.js']);
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png' };
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'";
 function failure(status, message) { return Object.assign(new Error(message), { status }); }
@@ -201,6 +201,25 @@ async function createBakeryServer(options = {}) {
         const source = ['profile', 'gallery_post', 'bot'].includes(url.searchParams.get('source')) ? url.searchParams.get('source') : 'profile';
         if (!/prefetch/i.test(String(req.headers['sec-purpose'] || req.headers.purpose || ''))) metric(req, res, 'instagram_click', source);
         res.writeHead(302, { Location: destination.href, 'Cache-Control': 'no-store' }); return res.end();
+      }
+      if (req.method === 'POST' && route === '/api/orders/track') {
+        rate('track:' + ip, 20, 900000);
+        const body = await readJSON(req);
+        const reference = text(body.reference, 'order reference', 40, true).toUpperCase();
+        const phone = text(body.phone, 'phone number', 25, true).replace(/\D/g, '');
+        const row = /^BFB-[A-F0-9]{12}$/.test(reference) && phone.length >= 7 ? db.prepare('SELECT reference,phone,status,updated_at FROM orders WHERE reference=?').get(reference) : null;
+        if (!row || row.phone.replace(/\D/g, '') !== phone) throw failure(404, 'We could not find a matching enquiry. Check your reference and the full phone number used when ordering.');
+        const messages = {
+          'New enquiry': 'Your enquiry has been received. The bakery has not accepted the order yet.',
+          'Awaiting quote': 'The bakery is reviewing your design and price. Your order is not accepted yet.',
+          'Awaiting advance': 'Your enquiry is awaiting the agreed advance. Your order is not confirmed yet; contact the bakery for payment arrangements.',
+          'Confirmed': 'Your order has been accepted and confirmed by the bakery.',
+          'Baking': 'Your accepted order is being prepared.',
+          'Ready': 'Your order is ready. Please contact the bakery to arrange collection or delivery.',
+          'Completed': 'Your order has been completed. Thank you for celebrating with us!',
+          'Cancelled': 'This enquiry or order has been cancelled. Contact the bakery if you need help.'
+        };
+        return json(res, 200, { reference: row.reference, status: row.status, accepted: ['Confirmed','Baking','Ready','Completed'].includes(row.status), message: messages[row.status], updatedAt: row.updated_at });
       }
       if (req.method === 'POST' && route === '/api/orders') {
         rate('orders:' + ip, 100, 3600000); const visitorId = visitor(req, res); rate('orders-visitor:' + visitorId, 10, 3600000);

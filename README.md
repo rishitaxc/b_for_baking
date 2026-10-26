@@ -79,3 +79,8 @@ The pastel website includes 20 photos each for wedding, birthday and baby celebr
 The custom cake designer saves shape, tiers, colours, decorations, message, flavour wish and an illustration with the enquiry. Weight uses a selected 100/125/150 g allowance per guest, rounded up to 0.5 kg; the bakery confirms the final portions and design.
 
 Baker Bot is a built-in browser guide with intent matching and website information. It is not connected to a live AI model, does not make AI API calls and does not store a chat transcript on the server.
+
+
+Customer tools: the homepage cake quiz suggests gallery designs by occasion/style and estimates weight (guests × portion grams, rounded up to 0.5 kg). Budget is a customer preference, not a guaranteed price filter; the bakery quotes all designs. Choosing a result copies the plan into the enquiry.
+
+Customer tracking: use the Track my order section with the saved enquiry reference and full original phone number (formatting spaces/dashes are ignored; country codes must match). POST /api/orders/track is same-origin, rate limited and returns only reference, status, accepted flag, message and update time. No personal details, private notes or images are returned. Confirmed/Baking/Ready/Completed are accepted; Awaiting advance is pending. Owner updates in the dashboard appear on the next lookup. Existing enquiries also work. Tracking details are sent in JSON, never URL parameters, and responses are not cached.

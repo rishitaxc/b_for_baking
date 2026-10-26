@@ -80,3 +80,32 @@ test('orders and analytics survive a server restart; logout invalidates the sess
   assert.equal((await call('/api/admin/orders')).body.total, 2); assert.equal((await call('/api/admin/overview')).body.metrics.instagramClicks, 4);
   assert.equal((await call('/api/admin/logout', { method: 'POST', headers: { 'X-CSRF-Token': csrf }, body: '{}' })).status, 200); assert.equal((await call('/api/admin/orders')).status, 401);
 });
+
+
+test('customer tracker requires matching reference and full phone, reflects every owner status, exposes no private details', async () => {
+  const row = app.db.prepare('SELECT reference,status FROM orders WHERE id=?').get(orderId);
+  const lookup = data => call('/api/orders/track', { method: 'POST', body: JSON.stringify(data) }, customerCookies);
+  const wrong = await lookup({ reference: row.reference, phone: '1234567890' });
+  const missing = await lookup({ reference: 'BFB-000000000000', phone: fixture.phone });
+  assert.equal(wrong.status, 404); assert.equal(missing.status, 404); assert.equal(wrong.body.error, missing.body.error);
+  assert.equal((await lookup({ reference: row.reference })).status, 400);
+  assert.equal((await call('/api/orders/track', { method: 'POST', headers: { Origin: 'https://attacker.example' }, body: JSON.stringify({ reference: row.reference, phone: fixture.phone }) }, customerCookies)).status, 403);
+  assert.equal((await call('/api/orders/track?reference=' + row.reference + '&phone=' + fixture.phone, {}, customerCookies)).status, 404);
+  for (const status of ['New enquiry','Awaiting quote','Awaiting advance','Confirmed','Baking','Ready','Completed','Cancelled']) {
+    app.db.prepare('UPDATE orders SET status=? WHERE id=?').run(status, orderId);
+    const result = await lookup({ reference: row.reference.toLowerCase(), phone: '98765 43210' });
+    assert.equal(result.status, 200); assert.equal(result.body.status, status);
+    assert.equal(result.body.accepted, ['Confirmed','Baking','Ready','Completed'].includes(status));
+    assert.deepEqual(Object.keys(result.body).sort(), ['accepted','message','reference','status','updatedAt'].sort());
+    assert.match(result.headers.get('cache-control'), /no-store/);
+    assert.ok(!JSON.stringify(result.body).includes(fixture.name));
+    assert.ok(!JSON.stringify(result.body).includes(fixture.phone));
+  }
+  app.db.prepare('UPDATE orders SET status=? WHERE id=?').run(row.status, orderId);
+});
+
+test('customer tracker rate limits repeated lookups', async () => {
+  let response;
+  for (let attempt=0; attempt<21; attempt++) response = await call('/api/orders/track', {method:'POST',body:JSON.stringify({reference:'BFB-000000000000',phone:'1234567890'})}, customerCookies);
+  assert.equal(response.status, 429);
+});

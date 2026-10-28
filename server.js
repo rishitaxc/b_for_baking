@@ -10,7 +10,7 @@ const scrypt = promisify(crypto.scrypt);
 const ROOT = __dirname;
 const STATUSES = ['New enquiry', 'Awaiting quote', 'Awaiting advance', 'Confirmed', 'Baking', 'Ready', 'Completed', 'Cancelled'];
 const TYPES = ['Custom celebration cake', 'Birthday cake', 'Wedding cake', 'Anniversary cake', 'Baby shower cake', 'Graduation cake', 'Hamper or gift', 'Something else'];
-const STATIC = new Set(['index.html', 'styles.css', 'app.js', 'builder.js', 'gallery-data.js', 'baker-bot.js', 'customer-api.js', 'admin.html', 'admin.css', 'admin.js', 'privacy.html', 'customer-tools.js']);
+const STATIC = new Set(['index.html', 'styles.css', 'app.js', 'builder.js', 'gallery-data.js', 'baker-bot.js', 'customer-api.js', 'admin.html', 'admin.css', 'admin.js', 'privacy.html', 'customer-tools.js', 'cake-motion.js']);
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png' };
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'";
 function failure(status, message) { return Object.assign(new Error(message), { status }); }

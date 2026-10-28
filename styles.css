@@ -34,3 +34,35 @@ h3{font-family:var(--serif);font-weight:400}.occasion-card:focus-visible{outline
 .tracking-result p { line-height: 1.7; }
 .tracking-result.order-accepted { border-left-color: #477361; background: #f3faf5; }
 @media(max-width:700px) { .quiz-designs { grid-template-columns: 1fr; } .quiz-card img { max-height: 360px; } .customer-tool .form-grid { grid-template-columns: 1fr; } }
+/* Cake motion is scoped to the live scene so downloaded design images stay still. */
+.hero-photo { isolation: isolate; }
+.cake-sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; border-radius: inherit; }
+.cake-sparkles span { position: absolute; color: #bb6187; font-size: 30px; text-shadow: 0 2px 12px #fff; }
+.cake-sparkles span:nth-child(1) { top: 15%; left: 9%; }
+.cake-sparkles span:nth-child(2) { top: 38%; right: 8%; font-size: 23px; }
+.cake-sparkles span:nth-child(3) { bottom: 20%; left: 16%; font-size: 20px; }
+.cake-sparkles span:nth-child(4) { top: 8%; right: 22%; font-size: 19px; }
+.motion-toggle,.cake-replay { position: relative; z-index: 3; border: 1px solid #d9a8bd; border-radius: 22px; padding: 9px 14px; background: #fff7f8; color: #884361; font-size: 11px; }
+.motion-toggle { display: block; margin: 30px 0 0 auto; }
+.cake-motion-actions { margin-top: 15px; }
+.motion-toggle:disabled,.cake-replay:disabled { cursor: default; opacity: .7; }
+@media(prefers-reduced-motion:no-preference) {
+  .hero-photo>img { animation: cake-float 6s ease-in-out infinite; will-change: transform; }
+  #cake-canvas { animation: cake-breathe 6s ease-in-out infinite; transform-origin: 50% 80%; }
+  #cake-canvas .cake-tier { transform-box: view-box; transform-origin: 250px 350px; animation: tier-arrive 650ms cubic-bezier(.22,.7,.25,1) both; animation-delay: var(--tier-delay,0ms); }
+  .cake-sparkles span { animation: sugar-twinkle 3.8s ease-in-out infinite both; }
+  .cake-sparkles span:nth-child(2) { animation-delay: -1s; }
+  .cake-sparkles span:nth-child(3) { animation-delay: -2.2s; }
+  .cake-sparkles span:nth-child(4) { animation-delay: -.6s; }
+  .round-stamp { animation: cake-seal 7s ease-in-out infinite; }
+  .quiz-card img { transition: transform 500ms ease; }
+  .quiz-card:hover img { transform: translateY(-4px) rotate(-1deg); }
+  @keyframes cake-float { 0%,100% { transform: translateY(0) rotate(-.6deg); } 50% { transform: translateY(-12px) rotate(.6deg); } }
+  @keyframes cake-breathe { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
+  @keyframes tier-arrive { from { opacity: 0; transform: translateY(-32px) scale(.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes sugar-twinkle { 0%,100% { opacity: .3; transform: translateY(5px) scale(.8) rotate(-10deg); } 50% { opacity: 1; transform: translateY(-10px) scale(1.12) rotate(10deg); } }
+  @keyframes cake-seal { 0%,100% { transform: rotate(8deg); } 50% { transform: rotate(16deg); } }
+  .cake-motion-scene:not(.motion-visible) *, .motion-tab-hidden .cake-motion-scene * { animation-play-state: paused !important; }
+}
+html[data-cake-motion="paused"] .cake-motion-scene * { animation: none !important; will-change: auto; }
+@media(prefers-reduced-motion:reduce) { .cake-motion-scene * { animation: none !important; will-change: auto; } }
